@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 12 10:43:13 2022
-
 @author: vorwerkj
 """
 
@@ -12,67 +10,51 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# time step of the fault
 t_step = 0.5
+# simulation horizon
+Thorizon = 20
+# Select if you would like to store the plotted results
+plot_gens = False    # if true. store generator plots
+plot_WTs = False    # if true. store wind turbine plots
+plot_PVs = False     # if true. store PV plots
+plot_V = False    # if true store bus voltage plots
 
-#os.remove(".trace")
 
-    #% Conduct Simulation
+#% Load ramses 
 ram = pyramses.sim(r"C:\Users\vorjo\OneDrive - Danmarks Tekniske Universitet\Documents\ramses\URAMSES\URAMSES\URAMSES\Release_intel_w64")
 # ram = pyramses.sim(r"C:\Users\vorwerkj\Documents_local\pyRamses\URAMSES\URAMSES-3.40c\Release_intel_w64")
 
+# configure the simulation
 case = pyramses.cfg("cmd.txt")
 
 # store results
 case.addTrj("out.trj")
 case.addOut('output.trace')
 
-# # # execute first 0s
+# initialize 
 ram.execSim(case,0)
 
 # Load step 
 #ram.addDisturb(t_step, 'CHGPRM INJ L0 P0 -500 0.1')
 
 # Loose one generator, producing 500 MW
-#ram.addDisturb(t_step, 'BREAKER SYNC_MACH SM35G1 0')
+ram.addDisturb(t_step, 'BREAKER SYNC_MACH SM35G1 0')
 
-# Fault Bus works fine
+# Fault Bus
 #ram.addDisturb(t_step, 'FAULT BUS 193 0 5')
 #ram.addDisturb(t_step+0.05, 'CLEAR BUS 193')
 
 # run simulation
-Thorizon = 20
 try:
      ret = ram.contSim(Thorizon) # Run simulation
      ram.endSim()
 except:
     print(ram.getLastErr())
     
-#%% Extract Results & set Plot Parameters
-plt.style.use("ggplot")
-sns.set_style('darkgrid', {'axes.facecolor':'0.9'})
-cm = 1/2.54
-sns.set_context("paper", font_scale = 1.2, rc={"grid.linewidth": 0.6})
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "sans-serif",
-    "font.sans-serif": ["Helvetica"]})
-# for Palatino and other serif fonts use:
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "serif",
-    "font.serif": ["Palatino"],
-})
-palette = ["#1269b0","#a8322d",'#edb120','#72791c', "#91056a", '#6f6f64', '#007a96', '#1f407a','#485a2c']
-sns.set_palette(palette)
 
 #%% Overview plots
 ext = pyramses.extractor(case.getTrj())
-
-plot_gens = False
-plot_WTs = False
-plot_PVs = False
-plot_V = False
-
 
 
 #%% Generators
@@ -145,18 +127,6 @@ td_con = {
 td_con['dP'] = td_con['P']-td_con['P'].loc[0]
 td_con['dQ'] = td_con['Q']-td_con['Q'].loc[0]
 
-# # Combine in Plot
-# fig = plt.figure(None, (13*cm,15*cm))
-# ax = fig.subplots(3,1, sharex = True)
-# td_con['dP'].plot(ax = ax[0], ylabel = 'DP in MW', legend = True)
-# td_con['dQ'].plot(ax = ax[1], ylabel = 'dQ in Mvar', legend = False)
-# td_con['w'].plot(ax = ax[2], ylabel = r'$f $ in Hz', legend = False)
-
-# # ax[0].set_xlim([0.5,2])
-# # td_gen['wcoi'].plot(ax = ax[3], ylabel = r'$ \Delta f $ in Hz', xlabel = 'time in s', legend = False)
-# ax[0].set_title('AC Interconnectors Overview')
-# plt.savefig('Interconnector.png', dpi = 300, bbox_inches='tight')
-
 #%%  Plot overall reserve
 
 fig = plt.figure(None,(13*cm,15*cm))
@@ -176,10 +146,6 @@ ax[0].set_title('Reserve Activation')
 ax[0].legend(['Generators','Interconnectors'])
 
 fig.align_ylabels(ax[:])
-# ax[0].set_xlim([0,20])
-# ax[0].set_ylim([-20,650])
-# ax[1].set_ylim([-20,650])
-# ax[0].set_xlim([0,100])
 plt.savefig('Reserve.png', dpi = 300,bbox_inches='tight')
 
 #%% Inertia Estimation Interconnectors
@@ -262,11 +228,6 @@ wt4['vt'].plot(ax=ax[3], ylabel='v in pu', xlabel = 'time in s', legend=False)
 ax[0].set_title('WT4')
 
 fig.align_ylabels(ax[:])
-# ax[0].set_ylim([0,1.01])
-# ax[1].set_ylim([-0.6,0.6])
-# ax[2].set_ylim([47.95,50.05])
-# ax[3].set_ylim([0.89,1.01])
-# ax[0].set_xlim([0,100])
 plt.savefig('WindFarms.png', dpi = 300,bbox_inches='tight')
 
   # ax[0].legend(col=6, loc = 'upper')
@@ -317,35 +278,3 @@ if pvs !=[]:
             pv['Pref'][wt].plot(ax=ax[5], ylabel='Pref i pu', legend=False)
             ax[0].set_title(pvs)
           
-    
-
-# %% SVCs
-
-# injs = ram.getAllCompNames("INJ")
-# svcs  = list(filter(lambda x: 'SVC' in x, injs))
-
-# td_svc = {
-#     'B': pd.DataFrame(np.transpose([ext.getInj(x).B.value for x in svcs]),columns = svcs, index = time),
-#     'dB': pd.DataFrame(np.transpose([ext.getInj(x).dB.value for x in svcs]),columns = svcs, index = time),
-#     'ix': pd.DataFrame(np.transpose([ext.getInj(x).ix.value for x in svcs]),columns = svcs, index = time),
-#     'iy': pd.DataFrame(np.transpose([ext.getInj(x).iy.value for x in svcs]),columns = svcs, index = time),
-#     'vx': pd.DataFrame(np.transpose([ext.getInj(x).vx.value for x in svcs]),columns = svcs, index = time),
-#     'vy': pd.DataFrame(np.transpose([ext.getInj(x).vy.value for x in svcs]),columns = svcs, index = time),
-#     'vt': pd.DataFrame(np.transpose([ext.getInj(x).vt.value for x in svcs]),columns = svcs, index = time),
-#     }
-
-# td_svc['P'] = td_svc['vx']*td_svc['ix'] + td_svc['vy']*td_svc['iy']
-# td_svc['Q'] = -td_svc['vx']*td_svc['iy'] + td_svc['vy']*td_svc['ix']
-
-# # Combine in Plot
-# fig = plt.figure(None,(13*cm,15*cm))
-# ax = fig.subplots(5,1, sharex = True)
-# td_svc['B'].plot(ax = ax[0], ylabel = 'B', legend = False)
-# td_svc['dB'].plot(ax = ax[1], ylabel = 'dB', legend = False)
-
-# td_svc['P'].plot(ax = ax[2], ylabel = 'P', legend = False)
-# td_svc['Q'].plot(ax = ax[3], ylabel = 'Q', legend = False)
-# td_svc['vt'].plot(ax = ax[4], ylabel = 'vt', legend = False)
-
-
-
