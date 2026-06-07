@@ -1,4 +1,4 @@
-# VICSystem
+# Victorian Transmission System Dynamic Model
 This repository contains the dynamic simulation files for the Victorian transmission system (as part of Australia). 
 The system is modeled in STEPSS. More information on the solver is available here: https://stepss.sps-lab.org/
 You can find more information on the development and application of the test case in: 
