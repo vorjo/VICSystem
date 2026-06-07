@@ -48,8 +48,8 @@ Demand = []
 Losses =[]
 Losses_LF =[]
 
-scen_file = 'Scenarios/Thesis/Output_elec_2025_'+date+'_step_'+electrification+'.xlsx'
-demand_file = "Scenarios/Thesis/demand_"+date+"_"+electrification+".xlsx"
+scen_file = 'Scenarios/Output_elec_2025_'+date+'_step_'+electrification+'.xlsx'
+demand_file = "Scenarios/demand_"+date+"_"+electrification+".xlsx"
 
 for time in range(1,tmax):
     
