@@ -12,7 +12,15 @@ The repository contains the following:
 - TNSingleSim is an example file running and evaluating a time-domain simulation including a loss of one large hydro-generator
 
 
-In addition, the repository includes the option to automatically generate the TN static and dynamic files based on a selected operating point. 
-For that 
+In addition, the repository includes the option to automatically generate the TN static and dynamic files based on a selected operating point. To change the operating point and generate your own static and dynamic files, proceed as follows: 
+1. Open the file TNLoadflow.py and select the power factor, the time range, date, and electrification level for which you want to obtain the load flow files. Then run the file. It will create one load flow solution per scenario and store them in a folder LFData. Once the loop is done, a figure is generated that compares the DC OPF outputs (with which the scenarios were generated) to the full power flow solution.
+2. Open the file DynamicData.py. Again, select date, time, and electrification. The code will then locate the load-flow solution of interest and transform it into the static and dynamic files needed for simulation. You can then proceed to run dynamic simulations with these files.
+
+The electrification level can be set to 0, 50%, and 100%. It represents how much gas-based residential heating you wish to electrify in your simulation. For more information, consult the linked publications. 
+
+
+
+
+   
 
 
