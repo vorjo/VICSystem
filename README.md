@@ -18,6 +18,7 @@ In addition, the repository includes the option to automatically generate the TN
 
 The electrification level can be set to 0, 50%, and 100%. It represents how much gas-based residential heating you wish to electrify in your simulation. For more information, consult the linked publications. 
 
+Feel free to contact me in case of questions or problems! 
 
 
 
