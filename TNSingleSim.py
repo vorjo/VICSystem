@@ -21,9 +21,8 @@ plot_PVs = False     # if true. store PV plots
 plot_V = False    # if true store bus voltage plots
 
 
-#% Load ramses 
-ram = pyramses.sim(r"C:\Users\vorjo\OneDrive - Danmarks Tekniske Universitet\Documents\ramses\URAMSES\URAMSES\URAMSES\Release_intel_w64")
-# ram = pyramses.sim(r"C:\Users\vorwerkj\Documents_local\pyRamses\URAMSES\URAMSES-3.40c\Release_intel_w64")
+#% Load license file, if you have your own 
+# ram = pyramses.sim(r"...\Release_intel_w64")
 
 # configure the simulation
 case = pyramses.cfg("cmd.txt")
